@@ -127,13 +127,21 @@ public class PrivateDataService {
         Role role = memberRole.getRole();
 
         boolean canRead = false;
+        boolean canUpdate = false;
+        boolean canDelete = false;
+        List<RoleAuthority> roleAuthorityList = roleAuthorityRepository.findAllByRole(role);
         if (privateDataRoleRepository.existsByPrivateDataAndRole(privateData, role)) {  // 역할 확인
-            List<RoleAuthority> roleAuthorityList = roleAuthorityRepository.findAllByRole(role);
-            // 해당 비밀을 읽을 권한이 있는지 확인
+            // 해당 비밀을 읽기, 수정, 삭제 권한이 있는지 확인
             for (RoleAuthority roleAuthority : roleAuthorityList) {
                 if (AuthorityName.PRIVATE_DATA_READ == roleAuthority.getAuthority().getName()) {
                     canRead = true;
                     break;
+                }
+                if (AuthorityName.PRIVATE_DATA_UPDATE == roleAuthority.getAuthority().getName()) {
+                    canUpdate = true;
+                }
+                if (AuthorityName.PRIVATE_DATA_DELETE == roleAuthority.getAuthority().getName()) {
+                    canDelete = true;
                 }
             }
         }
@@ -161,6 +169,7 @@ public class PrivateDataService {
         byte[] decryptedData = keyService.decryptSecret(encryptedPrivateData,
                 Base64.getDecoder().decode(decryptKeys.getDataKey()),
                 Base64.getDecoder().decode(decryptKeys.getIv()));
+        System.out.println("===============================");
 
         List<PrivateDataRoleDto> roles = privateDataRoleRepository.findAllByPrivateData(privateData).stream()
                 .map(pd -> PrivateDataRoleDto.builder()
@@ -168,19 +177,6 @@ public class PrivateDataService {
                         .name(pd.getRole().getName())
                         .build())
                 .toList();
-
-        // 멤버가 수정, 삭제 권한이 있는지 확인
-        boolean canUpdate = false;
-        boolean canDelete = false;
-        List<RoleAuthority> roleAuthorityList = roleAuthorityRepository.findAllByRole(role);
-        for (RoleAuthority roleAuthority : roleAuthorityList) {
-            if (AuthorityName.PRIVATE_DATA_UPDATE == roleAuthority.getAuthority().getName()) {
-                canUpdate = true;
-            }
-            if (AuthorityName.PRIVATE_DATA_DELETE == roleAuthority.getAuthority().getName()) {
-                canDelete = true;
-            }
-        }
 
         return GetPrivateDataResponseDto.builder()
                 .type(privateData.getType())
@@ -250,7 +246,7 @@ public class PrivateDataService {
                     .build();
         }
         PrivateData save = privateDataRepository.save(privateData);
-        privateDataSearchService.savePrivateData(save, organization.getId(), organization.getName() ,team.getId(), team.getName());
+        privateDataSearchService.savePrivateData(save, organization.getId(), organization.getName(), team.getId(), team.getName());
 
         // 설정하고자 하는 역할 조회
         List<Role> setRoleList = roleRepository.findAllById(requestDto.getRoleId());
