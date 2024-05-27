@@ -26,7 +26,6 @@ import world.pasds.back.privateData.entity.dto.PrivateDataRoleDto;
 import world.pasds.back.privateData.entity.dto.request.*;
 import world.pasds.back.privateData.entity.dto.response.*;
 import world.pasds.back.role.entity.Role;
-import world.pasds.back.role.entity.RoleAuthority;
 import world.pasds.back.role.repository.RoleAuthorityRepository;
 import world.pasds.back.role.repository.RoleRepository;
 import world.pasds.back.privateData.entity.PrivateData;
@@ -129,21 +128,12 @@ public class PrivateDataService {
         boolean canRead = false;
         boolean canUpdate = false;
         boolean canDelete = false;
-        List<RoleAuthority> roleAuthorityList = roleAuthorityRepository.findAllByRole(role);
         if (privateDataRoleRepository.existsByPrivateDataAndRole(privateData, role)) {  // 역할 확인
+            List<AuthorityName> roleAuthorityList = roleAuthorityRepository.findAuthoritiesByRole(role);
             // 해당 비밀을 읽기, 수정, 삭제 권한이 있는지 확인
-            for (RoleAuthority roleAuthority : roleAuthorityList) {
-                if (AuthorityName.PRIVATE_DATA_READ == roleAuthority.getAuthority().getName()) {
-                    canRead = true;
-                    break;
-                }
-                if (AuthorityName.PRIVATE_DATA_UPDATE == roleAuthority.getAuthority().getName()) {
-                    canUpdate = true;
-                }
-                if (AuthorityName.PRIVATE_DATA_DELETE == roleAuthority.getAuthority().getName()) {
-                    canDelete = true;
-                }
-            }
+            canRead = roleAuthorityList.contains(AuthorityName.PRIVATE_DATA_READ);
+            canUpdate = roleAuthorityList.contains(AuthorityName.PRIVATE_DATA_UPDATE);
+            canDelete = roleAuthorityList.contains(AuthorityName.PRIVATE_DATA_DELETE);
         }
 
         if (!canRead) {
@@ -169,8 +159,8 @@ public class PrivateDataService {
         byte[] decryptedData = keyService.decryptSecret(encryptedPrivateData,
                 Base64.getDecoder().decode(decryptKeys.getDataKey()),
                 Base64.getDecoder().decode(decryptKeys.getIv()));
-        System.out.println("===============================");
 
+        System.out.println("=============================");
         List<PrivateDataRoleDto> roles = privateDataRoleRepository.findAllByPrivateData(privateData).stream()
                 .map(pd -> PrivateDataRoleDto.builder()
                         .roleId(pd.getRole().getId())

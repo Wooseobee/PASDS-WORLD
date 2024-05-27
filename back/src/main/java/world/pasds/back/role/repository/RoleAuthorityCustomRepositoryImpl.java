@@ -8,6 +8,8 @@ import world.pasds.back.authority.entity.AuthorityName;
 import world.pasds.back.role.entity.QRoleAuthority;
 import world.pasds.back.role.entity.Role;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 public class RoleAuthorityCustomRepositoryImpl implements RoleAuthorityCustomRepository {
 
@@ -23,5 +25,14 @@ public class RoleAuthorityCustomRepositoryImpl implements RoleAuthorityCustomRep
                 .from(qRoleAuthority)
                 .where(queryCondition)
                 .fetchFirst() != null;
+    }
+
+    @Override
+    public List<AuthorityName> findAuthoritiesByRole(Role role) {
+        QRoleAuthority roleAuthority = QRoleAuthority.roleAuthority;
+        return jpaQueryFactory.select(roleAuthority.authority.name)
+                .from(roleAuthority)
+                .where(roleAuthority.role.eq(role))
+                .fetch();
     }
 }
