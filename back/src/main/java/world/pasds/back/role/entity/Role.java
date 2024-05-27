@@ -5,6 +5,8 @@ import lombok.*;
 import world.pasds.back.common.BaseEntity;
 import world.pasds.back.team.entity.Team;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -21,4 +23,7 @@ public class Role extends BaseEntity {
 
     @Setter
     private String name;
+
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RoleAuthority> roleAuthorities;
 }

@@ -58,18 +58,15 @@ public class RoleService {
             throw new BusinessException(ExceptionCode.MEMBER_UNAUTHORIZED);
         }
 
-        List<Role> teamRoleList = roleRepository.findAllByTeam(team);
-        Map<Long, List<AuthorityDto>> roleIdToAuthorities = new HashMap<>();
-        for (Role r : teamRoleList) {
-            List<RoleAuthority> findRoleAuthorityList = roleAuthorityRepository.findAllByRole(r);
-            List<AuthorityDto> authorities = findRoleAuthorityList.stream()
-                    .map(ra -> AuthorityDto.builder().id(ra.getAuthority().getId()).name(ra.getAuthority().getName()).build())
-                    .toList();
-            roleIdToAuthorities.put(r.getId(), authorities);
-        }
+        List<Role> teamRoleList = roleRepository.findAllByTeamWithAuthorities(team);
 
         return teamRoleList.stream().map(r -> {
-            List<AuthorityDto> authorities = roleIdToAuthorities.getOrDefault(r.getId(), Collections.emptyList());
+            List<AuthorityDto> authorities = r.getRoleAuthorities().stream()
+                    .map(ra -> AuthorityDto.builder()
+                            .id(ra.getAuthority().getId())
+                            .name(ra.getAuthority().getName())
+                            .build())
+                    .collect(Collectors.toList());
             return GetRoleResponseDto.builder()
                     .roleId(r.getId())
                     .name(r.getName())

@@ -8,7 +8,7 @@ import world.pasds.back.team.entity.Team;
 import java.util.List;
 
 @Repository
-public interface RoleRepository extends JpaRepository<Role, Long> {
+public interface RoleRepository extends JpaRepository<Role, Long>, RoleCustomRepository {
 
     List<Role> findAllByTeam(Team team);
 
