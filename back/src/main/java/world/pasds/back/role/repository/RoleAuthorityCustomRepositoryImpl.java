@@ -28,7 +28,7 @@ public class RoleAuthorityCustomRepositoryImpl implements RoleAuthorityCustomRep
     }
 
     @Override
-    public List<AuthorityName> findAuthoritiesByRole(Role role) {
+    public List<AuthorityName> findAuthorityNamesByRole(Role role) {
         QRoleAuthority roleAuthority = QRoleAuthority.roleAuthority;
         return jpaQueryFactory.select(roleAuthority.authority.name)
                 .from(roleAuthority)

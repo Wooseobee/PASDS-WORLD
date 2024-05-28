@@ -8,5 +8,5 @@ import java.util.List;
 public interface RoleAuthorityCustomRepository {
     boolean checkAuthority(Role role, AuthorityName authority);
 
-    List<AuthorityName> findAuthoritiesByRole(Role role);
+    List<AuthorityName> findAuthorityNamesByRole(Role role);
 }

@@ -129,7 +129,7 @@ public class PrivateDataService {
         boolean canUpdate = false;
         boolean canDelete = false;
         if (privateDataRoleRepository.existsByPrivateDataAndRole(privateData, role)) {  // 역할 확인
-            List<AuthorityName> roleAuthorityList = roleAuthorityRepository.findAuthoritiesByRole(role);
+            List<AuthorityName> roleAuthorityList = roleAuthorityRepository.findAuthorityNamesByRole(role);
             // 해당 비밀을 읽기, 수정, 삭제 권한이 있는지 확인
             canRead = roleAuthorityList.contains(AuthorityName.PRIVATE_DATA_READ);
             canUpdate = roleAuthorityList.contains(AuthorityName.PRIVATE_DATA_UPDATE);
