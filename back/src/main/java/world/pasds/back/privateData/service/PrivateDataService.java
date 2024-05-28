@@ -160,8 +160,7 @@ public class PrivateDataService {
                 Base64.getDecoder().decode(decryptKeys.getDataKey()),
                 Base64.getDecoder().decode(decryptKeys.getIv()));
 
-        System.out.println("=============================");
-        List<PrivateDataRoleDto> roles = privateDataRoleRepository.findAllByPrivateData(privateData).stream()
+        List<PrivateDataRoleDto> roles = privateDataRoleRepository.findAllWithRolesByPrivateData(privateData).stream()
                 .map(pd -> PrivateDataRoleDto.builder()
                         .roleId(pd.getRole().getId())
                         .name(pd.getRole().getName())

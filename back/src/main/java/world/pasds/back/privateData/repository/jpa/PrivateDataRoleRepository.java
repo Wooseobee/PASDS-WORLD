@@ -9,7 +9,7 @@ import world.pasds.back.privateData.entity.PrivateDataRole;
 import java.util.List;
 
 @Repository
-public interface PrivateDataRoleRepository extends JpaRepository<PrivateDataRole, Long> {
+public interface PrivateDataRoleRepository extends JpaRepository<PrivateDataRole, Long>, PrivateDataRoleCustomRepository {
 
     List<PrivateDataRole> findAllByPrivateData(PrivateData privateData);
 
